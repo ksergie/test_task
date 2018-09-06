@@ -31,8 +31,7 @@ public class MainPage {
     private By dropboxSort = By.xpath("//i[@class='material-icons pull-xs-right']");
     private By sortHi2Low = By.xpath("//div[@class='dropdown-menu']/a[@class='select-list js-search-link'][4]");
 
-    private By test = By.xpath("//div[@class='product-price-and-shipping']//span[@class='price']");
-    private By test1 = By.xpath("//div[@class='product-price-and-shipping']//span[@class='regular-price']");
+    private By test = By.xpath("//div[@class='product-price-and-shipping']/span");
 
 
     private static String url = "http://prestashop-automation.qatestlab.com.ua/ru/";
@@ -117,6 +116,7 @@ public class MainPage {
         openMainPage();
         setUSDcurrency();
         searchText("dress");
+        sortProductBy(sortHi2Low);
         getProductDiscount();
     }
 
@@ -177,17 +177,13 @@ public class MainPage {
         wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(xpathDiscount));
         List<WebElement>spans = driver.findElements(test);
         for(int i = 0; i < spans.size(); i++){
-            System.out.println("Price 1");
-            System.out.print(i + " ");
-            System.out.println(spans.get(i).getText());
-        }
-        prices.clear();
-        spans.clear();
-        spans = driver.findElements(test1);
-        for(int i = 0; i < spans.size(); i++){
-            System.out.println("Price 2");
-            System.out.print(i + " ");
-            System.out.println(spans.get(i).getText());
+            if(spans.get(i).getAttribute("class").equals("regular-price")){
+                System.out.println(spans.get(i).getText());
+                System.out.println(spans.get(i + 1).getText());
+                System.out.println(spans.get(i + 2).getText());
+            }
+//            System.out.println(spans.get(i).getAttribute("class"));
+//            System.out.println(spans.get(i).getText());
         }
         prices.clear();
         spans.clear();
