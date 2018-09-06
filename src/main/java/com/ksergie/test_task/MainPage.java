@@ -164,12 +164,25 @@ public class MainPage {
         Iterator iterator = prices.iterator();
         while(iterator.hasNext()){
             String str = (String) iterator.next();
-            str = trim(str.substring(0, str.indexOf('$')));
-            str = str.replace(",", ".");
-            priceOfProduct.add(Double.valueOf(str));
+//            str = trim(str.substring(0, str.indexOf('$')));
+//            str = str.replace(",", ".");
+            priceOfProduct.add(str2Double(str));
         }
         prices.clear();
         spans.clear();
+    }
+
+    private double str2Double(String str){
+        if(str.contains("$")){
+            str = trim(str.substring(0, str.indexOf('$')));
+            str = str.replace(",", ".");
+            return Double.valueOf(str);
+        }
+        if(str.contains("%")){
+            str = trim(str.substring(1, str.indexOf('%')));
+            return Double.valueOf(str);
+        }
+        return -1;
     }
 
     private void getProductDiscount(){
