@@ -1,4 +1,6 @@
 package com.ksergie.test_task;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -14,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import static jdk.nashorn.internal.objects.NativeString.trim;
 
 public class MainPage {
+    private static final Logger log = LogManager.getLogger(MainPage.class.getName());
     private WebDriver driver;
 
     public MainPage(WebDriver driver) {
@@ -22,7 +25,6 @@ public class MainPage {
 
     private By currency = By.xpath("//div[@id='_desktop_currency_selector']//span[2]");
     private By xpathPrices = By.xpath("//div[@class='product-price-and-shipping']/span[@itemprop='price' and @class='price']");
-    private By xpathDiscount = By.xpath("//div[@class='product-price-and-shipping']//span[@class='discount-percentage']");
     private By dropdownCurrency = By.xpath("//div[@id='_desktop_currency_selector']//i");
     private By linkUSDcurr = By.xpath("(//div[@id='_desktop_currency_selector']//a[@class='dropdown-item'])[3]");
     private By fieldSearch = By.name("s");
@@ -30,15 +32,13 @@ public class MainPage {
     private By totalProducts = By.xpath("//div[@id='js-product-list-top']//p");
     private By dropboxSort = By.xpath("//i[@class='material-icons pull-xs-right']");
     private By sortHi2Low = By.xpath("//div[@class='dropdown-menu']/a[@class='select-list js-search-link'][4]");
-
-    private By test = By.xpath("//div[@class='product-price-and-shipping']/span");
+    private By selectAmount = By.xpath("//div[@class='product-price-and-shipping']/span");
 
 
     private static String url = "http://prestashop-automation.qatestlab.com.ua/ru/";
     private String titleMainPage ="prestashop-automation";
     List<String> prices = new ArrayList<>();
     List<Double> priceOfProduct = new ArrayList<>();
-    List<Double> discountOfProduct = new ArrayList<>();
 
     public void openMainPage(){
         openPage(url, titleMainPage);
@@ -46,12 +46,17 @@ public class MainPage {
 
     public void checkCurrency(){
         openMainPage();
-        String siteCurrency = getCurrency();
+        setUSDcurrency();
+        if(getCurrency().equals("$")){
+            System.out.println(getCurrency() + " selected");
+        } else {
+            System.out.println("Error: wrong currency selected");
+        }
         getProductPrice();
         Iterator iterator = prices.iterator();
         while(iterator.hasNext()){
             String price = (String) iterator.next();
-            if(price.contains(siteCurrency)){
+            if(price.contains(getCurrency())){
                 System.out.println("The currencies are equal");
             }
         }
@@ -64,7 +69,6 @@ public class MainPage {
         selectCurrency(linkUSDcurr);
         wait.until(ExpectedConditions.invisibilityOfElementLocated(linkUSDcurr));
         Assertions.assertEquals("USD $", driver.findElement(currency).getText());
-
     }
 
     public void searchDress(){
@@ -74,16 +78,6 @@ public class MainPage {
         searchText("dress");
         getProductPrice();
         System.out.println("Dresses found - " + prices.size());
-        Iterator iterator = prices.iterator();
-        while(iterator.hasNext()){
-            String price = (String) iterator.next();
-            if(price.contains("$")){
-                System.out.println("The currency is $");
-            } else {
-                System.out.println("The currency is not $");
-
-            }
-        }
         String numberProduct = trim(wait.until(ExpectedConditions.visibilityOfElementLocated(totalProducts)).getText());
         if(numberProduct.equals("Товаров: " + prices.size() + ".")){
             System.out.println("The amount is equal");
@@ -121,7 +115,7 @@ public class MainPage {
     }
 
     private int checkSort(){
-        for(int i = 0; i < priceOfProduct.size(); i++){
+        for(int i = 0; i < priceOfProduct.size() - 1; i++){
             if (priceOfProduct.get(i) < priceOfProduct.get(i + 1)){
                 return -1;
             }
@@ -132,9 +126,7 @@ public class MainPage {
     private void sortProductBy(By xpath){
         WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.elementToBeClickable(dropboxSort)).click();
-//        driver.findElement(dropboxSort).click();
         wait.until(ExpectedConditions.elementToBeClickable(xpath)).click();
-//        driver.findElement(xpath).click();
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -155,8 +147,8 @@ public class MainPage {
     }
 
     private void getProductPrice(){
-        WebDriverWait wait = new WebDriverWait(driver, 7);
-        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(xpathPrices));
+//        WebDriverWait wait = new WebDriverWait(driver, 7);
+//        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(xpathPrices));
         List<WebElement>spans = driver.findElements(xpathPrices);
         for (WebElement span: spans) {
             prices.add(span.getText());
@@ -164,39 +156,47 @@ public class MainPage {
         Iterator iterator = prices.iterator();
         while(iterator.hasNext()){
             String str = (String) iterator.next();
-//            str = trim(str.substring(0, str.indexOf('$')));
-//            str = str.replace(",", ".");
             priceOfProduct.add(str2Double(str));
         }
-        prices.clear();
         spans.clear();
     }
 
     private double str2Double(String str){
+        double i = 0;
         if(str.contains("$")){
             str = trim(str.substring(0, str.indexOf('$')));
             str = str.replace(",", ".");
-            return Double.valueOf(str);
+            i = Double.valueOf(str);
         }
         if(str.contains("%")){
             str = trim(str.substring(1, str.indexOf('%')));
-            return Double.valueOf(str);
+            i = Double.valueOf(str);
         }
-        return -1;
+        return i;
     }
 
     private void getProductDiscount(){
-        WebDriverWait wait = new WebDriverWait(driver, 7);
-        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(xpathDiscount));
-        List<WebElement>spans = driver.findElements(test);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//        WebDriverWait wait = new WebDriverWait(driver, 7);
+//        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(selectAmount));
+        List<WebElement>spans = driver.findElements(selectAmount);
         for(int i = 0; i < spans.size(); i++){
             if(spans.get(i).getAttribute("class").equals("regular-price")){
-                System.out.println(spans.get(i).getText());
-                System.out.println(spans.get(i + 1).getText());
-                System.out.println(spans.get(i + 2).getText());
+                double oldPrice = str2Double(spans.get(i).getText());
+                double discount = str2Double(spans.get(i + 1).getText());
+                double newPrice = str2Double(spans.get(i + 2).getText());
+                if(Math.round(100.0 - newPrice / oldPrice * 100) != discount){
+                    System.out.println("Discount is wrong");
+                    System.out.println(newPrice + " / " + oldPrice + " * 100 != " + discount);
+                } else {
+                    System.out.println("Discount is right");
+                    System.out.println(newPrice + " / " + oldPrice + " * 100 = " + discount);
+                }
             }
-//            System.out.println(spans.get(i).getAttribute("class"));
-//            System.out.println(spans.get(i).getText());
         }
         prices.clear();
         spans.clear();

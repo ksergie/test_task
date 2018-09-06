@@ -11,12 +11,6 @@
         "type": "firefox",
         "version": "latest"
       }
-    ],
-    [
-      {
-        "type": "edge",
-        "version": "latest"
-      }
     ]
   ]
 }

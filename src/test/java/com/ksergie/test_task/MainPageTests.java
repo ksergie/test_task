@@ -12,7 +12,7 @@ import org.openqa.selenium.WebDriver;
 public class MainPageTests {
     private MainPage mainPage;
 
-    @Disabled
+//    @Disabled
     @TestTemplate
     @DisplayName("Main page. Open the Main Page")
     void testOpenMainPage(WebDriver driver){
@@ -20,7 +20,7 @@ public class MainPageTests {
         mainPage.openMainPage();
     }
 
-    @Disabled
+//    @Disabled
     @TestTemplate
     @DisplayName("Main page. Check currency")
     void testCheckCurrency(WebDriver driver){
@@ -28,7 +28,7 @@ public class MainPageTests {
         mainPage.checkCurrency();
     }
 
-    @Disabled
+//    @Disabled
     @TestTemplate
     @DisplayName("Main page. Set USD currency")
     void testSetUSDCurrency(WebDriver driver){
@@ -36,7 +36,7 @@ public class MainPageTests {
         mainPage.setUSDcurrency();
     }
 
-    @Disabled
+//    @Disabled
     @TestTemplate
     @DisplayName("Main page. Search Dress")
     void testSearchDress(WebDriver driver){
@@ -44,7 +44,7 @@ public class MainPageTests {
         mainPage.searchDress();
     }
 
-    @Disabled
+//    @Disabled
     @TestTemplate
     @DisplayName("Main page. Test sorting of Products")
     void testSortProduct(WebDriver driver){
@@ -52,6 +52,7 @@ public class MainPageTests {
         mainPage.sortProductPriceHigh();
     }
 
+//    @Disabled
     @TestTemplate
     @DisplayName("Main page. Check Product's discount")
     void testProductDiscount(WebDriver driver){
