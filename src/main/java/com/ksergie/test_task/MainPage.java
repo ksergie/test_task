@@ -148,15 +148,13 @@ public class MainPage {
     }
 
     private void sortProductBy(By xpath){
-
-        WebDriverWait wait = new WebDriverWait(driver, 10);
-        wait.until(ExpectedConditions.elementToBeClickable(dropboxSort)).click();
-        wait.until(ExpectedConditions.elementToBeClickable(xpath)).click();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        pause(1000);
+//        WebDriverWait wait = new WebDriverWait(driver, 10);
+//        wait.until(ExpectedConditions.elementToBeClickable(dropboxSort)).click();
+//        wait.until(ExpectedConditions.elementToBeClickable(xpath)).click();
+          driver.findElement(dropboxSort).click();
+          driver.findElement(xpath).click();
+        pause(1000);
     }
 
     private void searchText(String str){
@@ -175,8 +173,8 @@ public class MainPage {
     }
 
     private void getProductPrice(){
-//        WebDriverWait wait = new WebDriverWait(driver, 7);
-//        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(xpathPrices));
+        WebDriverWait wait = new WebDriverWait(driver, 7);
+        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(xpathPrices));
         List<WebElement>spans = driver.findElements(xpathPrices);
         for (WebElement span: spans) {
             prices.add(span.getText());
@@ -204,11 +202,7 @@ public class MainPage {
     }
 
     private void getProductDiscount(){
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        pause(1000);
 //        WebDriverWait wait = new WebDriverWait(driver, 7);
 //        wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(selectAmount));
         List<WebElement>spans = driver.findElements(selectAmount);
@@ -247,5 +241,13 @@ public class MainPage {
         driver.manage().window().maximize();
         driver.get(url);
         Assertions.assertEquals(driver.getTitle(), titlePage);
+    }
+
+    private void pause(int msec){
+        try {
+            Thread.sleep(msec);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
