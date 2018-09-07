@@ -1,3 +1,14 @@
+/*
+Using frameworks:
+Junit5
+selenium-jupiter (Junit5 extension) for testing the last versions Chrome, Edge and Firefox browsers
+log4j2
+maven-surefire-plugin
+
+the testSortProduct for Edge does not stable enough
+
+ */
+
 package com.ksergie.test_task;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,6 +53,7 @@ public class MainPage {
 
     public void openMainPage(){
         openPage(url, titleMainPage);
+        log.info("Open the " + url);
     }
 
     public void checkCurrency(){
@@ -49,8 +61,11 @@ public class MainPage {
         setUSDcurrency();
         if(getCurrency().equals("$")){
             System.out.println(getCurrency() + " selected");
+            log.info("The currency " + getCurrency() + " is selected");
         } else {
             System.out.println("Error: wrong currency selected");
+            log.error("The currency is not selected");
+
         }
         getProductPrice();
         Iterator iterator = prices.iterator();
@@ -58,6 +73,8 @@ public class MainPage {
             String price = (String) iterator.next();
             if(price.contains(getCurrency())){
                 System.out.println("The currencies are equal");
+                log.info("The currencies are equal");
+
             }
         }
         prices.clear();
@@ -69,6 +86,7 @@ public class MainPage {
         selectCurrency(linkUSDcurr);
         wait.until(ExpectedConditions.invisibilityOfElementLocated(linkUSDcurr));
         Assertions.assertEquals("USD $", driver.findElement(currency).getText());
+        log.info("Set the currency");
     }
 
     public void searchDress(){
@@ -81,8 +99,11 @@ public class MainPage {
         String numberProduct = trim(wait.until(ExpectedConditions.visibilityOfElementLocated(totalProducts)).getText());
         if(numberProduct.equals("Товаров: " + prices.size() + ".")){
             System.out.println("The amount is equal");
+            log.info("The amount is equal");
         } else {
             System.out.println("The amount is not equal");
+            log.error("The amount is equal");
+
 
         }
         prices.clear();
@@ -100,8 +121,10 @@ public class MainPage {
         }
         if(checkSort() < 0){
             System.out.println("Error: The sorting is not correct");
+            log.error("Error: The sorting is not correct");
         } else {
             System.out.println("The sorting is correct");
+            log.info("The sorting is correct");
         }
         prices.clear();
     }
@@ -115,6 +138,7 @@ public class MainPage {
     }
 
     private int checkSort(){
+        // Previous element of array must be bigger than next one
         for(int i = 0; i < priceOfProduct.size() - 1; i++){
             if (priceOfProduct.get(i) < priceOfProduct.get(i + 1)){
                 return -1;
@@ -124,6 +148,7 @@ public class MainPage {
     }
 
     private void sortProductBy(By xpath){
+
         WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.elementToBeClickable(dropboxSort)).click();
         wait.until(ExpectedConditions.elementToBeClickable(xpath)).click();
@@ -137,12 +162,15 @@ public class MainPage {
     private void searchText(String str){
         WebDriverWait wait = new WebDriverWait(driver, 5);
         wait.until(ExpectedConditions.visibilityOfElementLocated(fieldSearch)).sendKeys(str);
+        log.info("Search the text: " + str);
         wait.until(ExpectedConditions.elementToBeClickable(buttonSearch)).click();
+        log.info("Click the Search button");
     }
 
     private void selectCurrency(By xpathCurrency){
         WebDriverWait wait = new WebDriverWait(driver, 5);
         wait.until(ExpectedConditions.elementToBeClickable(dropdownCurrency)).click();
+        log.info("Click the Currencies dropdown");
         wait.until(ExpectedConditions.elementToBeClickable(xpathCurrency)).click();
     }
 
@@ -191,10 +219,15 @@ public class MainPage {
                 double newPrice = str2Double(spans.get(i + 2).getText());
                 if(Math.round(100.0 - newPrice / oldPrice * 100) != discount){
                     System.out.println("Discount is wrong");
+                    log.error("Discount is wrong");
                     System.out.println(newPrice + " / " + oldPrice + " * 100 != " + discount);
+                    log.info(newPrice + " / " + oldPrice + " * 100 != " + discount);
                 } else {
                     System.out.println("Discount is right");
+                    log.info("Discount is right");
                     System.out.println(newPrice + " / " + oldPrice + " * 100 = " + discount);
+                    log.info(newPrice + " / " + oldPrice + " * 100 = " + discount);
+
                 }
             }
         }
